@@ -1,6 +1,6 @@
 import React, { Component} from 'react'
 import './Home.css'
-import {Link} from 'react-router-dom'
+import {Link, withRouter} from 'react-router-dom'
 import Logo from '../../Assests/icons/add-24px.svg'
 import Delete from '../../Assests/icons/delete-black-18dp.svg'
 import Edit from '../../Assests/icons/create-black-18dp.svg'
@@ -24,26 +24,34 @@ class Home extends Component {
         this.fetchData();
         console.log(this.props)
     }
-    
+    delete = (personId) => {
+        let id = parseInt(personId)
+        BookServices.deletePerson(id);
+        window.location.reload();
+    };
 
+    update = (personId) => {
+        this.props.history.push(`Form/${personId}`);
+        console.log(personId);
+     };
     /*============================================================================================ */
     render() {
   return (
     <div>    
-    <div class="main-content">
-        <div class="header-content">
-            <div class="person-detail-text">
+    <div className="main-content">
+        <div className="header-content">
+            <div className="person-detail-text">
                 Person Details
             </div>
-            <Link to="/form" class="add-button">
+            <Link to="/form" className="add-button">
                 <img src={Logo} alt="Add User Logo"/>Add User</Link>
         </div>
     
-    <table id="table-display" class="table">
+    <table id="table-display" className="table">
         <tr>
-            <th>Profile</th>
-            <th>Full Name</th>
-            <th>Phone Number</th>
+            
+            <th>Name</th>
+            <th>Contact</th>
             <th>Address</th>
             <th>City</th>
             <th>State</th>
@@ -51,30 +59,25 @@ class Home extends Component {
             <th>Action</th>
         </tr>
         <tbody>
-                    {this.state.addressbook.map((addressbooks,index) => (
+                    {this.state.addressbook && this.state.addressbook.map((book,index) => (
                         <tr key={`${index}`}>                             
-                            <td>
-                                <img src="" alt="ProfilePic" srcSet="" /></td>
-                            <td>{addressbooks.fullName}</td>
-                            <td>{addressbooks.phoneNumber}</td>
+                            <td>{book.fullName}</td>
+                            <td>{book.phoneNumber}</td>
                             
-							<td>{addressbooks.address}</td>
-							<td>{addressbooks.city}</td>
-                            <td>{addressbooks.state}</td>
-                            <td>{addressbooks.zip}</td>
+							<td>{book.address}</td>
+							<td>{book.city}</td>
+                            <td>{book.state}</td>
+                            <td>{book.zip}</td>
                             <td>
-                            <img src={Delete} alt="delete" onClick=""/>
-                            
-                            <img src={Edit} alt="edit" onClick="" />
+                            <img src={Delete} alt="delete" onClick={() => this.delete(book.id)}/>
+                            <img src={Edit} alt="edit" onClick={() => this.update(book.id)} />
                             </td>
                         </tr>
                     ))}
-                </tbody>
-        
-    </table>
+                </tbody>      
+            </table>
+        </div>
     </div>
-    </div>
-  )
+  )}
 }
-}
-export default Home;
+export default withRouter(Home);
