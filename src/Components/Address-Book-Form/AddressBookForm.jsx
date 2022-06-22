@@ -27,6 +27,7 @@ const onNameChange = (event) => {
     setForm({ ...formValue, [event.target.name]: event.target.value });
     console.log('value for', event.target.name, event.target.value);
 }
+
 const params = useParams();
     useEffect (() => {
         console.log(params.id)
@@ -36,16 +37,16 @@ const params = useParams();
         }
     },[params.id]);
 
-    const getPersonId = (employeeId) => {
-        console.log("Data Found")
-        BookServices.getPersonById(employeeId).then((data)=>{
-           let obj = data.data.data;
-           console.log(obj);
-           setData(obj);
-            });
-          };
+const getPersonId = (employeeId) => {
+    console.log("Data Found")
+    BookServices.getPersonById(employeeId).then((data)=>{
+        let obj = data.data.data;
+        console.log(obj);
+        setData(obj);
+        });
+    };
         
-          const setData = (obj) => {
+    const setData = (obj) => {
             console.log()
              setForm({
                ...formValue,
@@ -73,8 +74,7 @@ const save = async (event) => {
         state: formValue.state,
         zip: formValue.zip
     };
-
-    BookServices.addPerson(object);
+    
     if(formValue.isUpdate) {
         BookServices.updatePerson(params.id,object)
         .then((data) => {
@@ -92,7 +92,7 @@ const save = async (event) => {
             alert("Data Added!!")
           })          
     }    
-    // window.location.reload(); 
+    window.location.reload(); 
 }
 /*=================================================================================================== */
 
@@ -136,7 +136,7 @@ const save = async (event) => {
                           <option value="Pune">Pune</option>
                           <option value="Chennai">Chennai</option>
                           <option value="Kolkata">Kolkata</option>
-                          <option value="Jaipur">Nagpur</option>
+                          <option value="Nagpur">Nagpur</option>
                       </select>
                   </div>
               </div>
