@@ -15,24 +15,27 @@ class Home extends Component {
             addressbook: [],
         };
     }
+
+    componentDidMount() {
+        this.fetchData();
+        console.log(this.props)
+    }
+
 	fetchData() {
         BookServices.getAll().then((response) => {
             this.setState({ addressbook: response.data.data });
         });
     }
-    componentDidMount() {
-        this.fetchData();
-        console.log(this.props)
-    }
+    
     delete = (personId) => {
         let id = parseInt(personId)
         BookServices.deletePerson(id);
         window.location.reload();
     };
 
-    update = (personId) => {
-        this.props.history.push(`Form/${personId}`);
-        console.log(personId);
+    update = (id) => {
+        this.props.history.push(`AddressBookForm/${id}`);
+        console.log(id);
      };
     /*============================================================================================ */
     render() {
@@ -59,11 +62,10 @@ class Home extends Component {
             <th>Action</th>
         </tr>
         <tbody>
-                    {this.state.addressbook && this.state.addressbook.map((book,index) => (
+                    {this.state.addressbook.map((book,index) => (
                         <tr key={`${index}`}>                             
                             <td>{book.fullName}</td>
                             <td>{book.phoneNumber}</td>
-                            
 							<td>{book.address}</td>
 							<td>{book.city}</td>
                             <td>{book.state}</td>
