@@ -65,8 +65,8 @@ class Home extends Component {
                         <tbody>
                             {this.state.addressbook.map((book,index) => (
                                 <tr key={`${index}`}>                             
-                                    <td>{book.fullName}</td>
-                                    <td>{book.phoneNumber}</td>
+                                    <td>{book.name}</td>
+                                    <td>{book.contact}</td>
 					            	<td>{book.address}</td>
 						            <td>{book.city}</td>
                                     <td>{book.state}</td>

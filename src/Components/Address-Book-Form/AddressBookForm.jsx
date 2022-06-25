@@ -12,13 +12,17 @@ const Form = (props) =>{
 
 /*=================================================================================================== */
 let startValue = {
-    fullName: "",
-    phoneNumber: "",
+    name: "",
+    contact: "",
     address: "",
-    city: "",
-    state: "",
+    // city: "",
+    // state: "",
     zip: "",
-    isUpdate: false,
+    // isUpdate: false,
+    nameError:'',
+    contactError:'',
+    addressError:'',
+    zipError:'',
 }
 const [formValue, setForm] = useState(startValue)
 
@@ -32,6 +36,56 @@ const onNameChange = (event) => {
     setForm({ ...formValue, [event.target.name]: event.target.value });
     console.log('value for', event.target.name, event.target.value);
 }
+
+const nameCheck = (event) => {
+    console.log('value is', event.target.value);
+    const nameRegex = RegExp("^[A-Z]{1}[a-zA-Z\s]{2,}$");
+    // setForm({name: event.target.value });
+    setForm({ ...formValue, [event.target.name]: event.target.value });
+    if(nameRegex.test(event.target.value)){
+        setForm({nameError:''})
+        console.log(event.target.value)
+        setForm({ ...formValue, [event.target.name]: event.target.value });
+    }
+    else setForm({nameError:'Incorrect name'})
+   
+}
+
+
+  const checkcontact = (event) => {
+    console.log('value is', event.target.value);
+    const nameRegex = RegExp("^[0-9]{2}\\s{0,1}[0-9]{10}$");
+    setForm({contact: event.target.value});
+    if(nameRegex.test(event.target.value)){
+        setForm({contactError:''})
+    }
+    else setForm({contactError:'Enter valid number'})
+    
+  }
+
+  const checkAddress = (event) => {
+    console.log('value is', event.target.value);
+    const nameRegex = RegExp("^[a-zA-Z0-9-, ]+$");
+    setForm({address: event.target.value});
+    if(nameRegex.test(event.target.value)){
+        setForm({addressError:''})
+    }
+    else setForm({addressError:'Enter Valid Address'})
+    setForm({ ...formValue, [event.target.name]: event.target.value });
+  }
+
+  const checkZip = (event) => {
+    console.log('value is', event.target.value);
+    const nameRegex = RegExp("^[1-9]{1}[0-9]{5}$");
+    setForm({zip: event.target.value});
+    if(nameRegex.test(event.target.value)){
+        setForm({zipError:''})
+    }
+    else setForm({zipError:'Enter Valid zip'})
+    setForm({ ...formValue, [event.target.name]: event.target.value });
+  }
+
+
 
 const params = useParams();
     useEffect (() => {
@@ -57,8 +111,8 @@ const getPersonId = (employeeId) => {
                ...formValue,
                ...obj,
                id: obj.id,
-               fullName: obj.fullName,
-               phoneNumber: obj.phoneNumber,
+               name: obj.name,
+               contact: obj.contact,
                address: obj.address,
                city: obj.city,
                state: obj.state,
@@ -72,8 +126,8 @@ const save = async (event) => {
     
     let object = {
         id: formValue.id,
-        fullName: formValue.fullName,
-        phoneNumber: formValue.phoneNumber,
+        name: formValue.name,
+        contact: formValue.contact,
         address: formValue.address,
         city: formValue.city,
         state: formValue.state,
@@ -97,7 +151,7 @@ const save = async (event) => {
             alert("Data Added!!")
           })          
     }    
-    window.location.reload(); 
+    // window.location.reload(); 
 }
 /*=================================================================================================== */
 
@@ -116,22 +170,23 @@ const save = async (event) => {
                 <form className="form" action="#" onSubmit={save}>
                     <label className="label text" htmlFor="name">Full Name</label>
                     <div className="row-content">
-                        <input className="input" type="text" id="fullName" name="fullName" placeholder="Enter Name" 
-                            onChange={onNameChange} value={formValue.fullName} required/>
-                        <error-output className="fullname-error" htmlFor="name"></error-output>
+                        <input className="input" type="text" id="name" name="name" placeholder="Enter Name" 
+                            onChange={nameCheck} value={formValue.name}/>
+                        <span className="error-output">{formValue.nameError}</span>
                     </div>
 
                     <label className="label text" htmlFor="phone">Phone Number</label>
                     <div className="row-content">
-                        <input className="input" type="number" id="phoneNumber" name="phoneNumber" placeholder="Enter Phone Number" 
-                            onChange={onNameChange} value={formValue.phoneNumber} required/>
-                        <error-output className="phone-error" htmlFor="number"></error-output>
+                        <input className="input" type="number" id="contact" name="contact" placeholder="Enter Phone Number" 
+                            onChange={checkcontact} value={formValue.contact} required/>
+                         <span className="error-output">{formValue.contactError}</span>
                     </div>
 
                     <label className="label text" htmlFor="address">Address</label>
                     <div className="row-content">
                         <textarea className="input" name="address" id="address" rows="4" placeholder="Enter Address" 
-                            onChange={onNameChange} value={formValue.address} ></textarea>
+                            onChange={checkAddress} value={formValue.address} ></textarea>
+                             <span className="error-output">{formValue.addressError}</span>
                     </div>
 
                     <div className="row">
@@ -166,8 +221,8 @@ const save = async (event) => {
                     <label className="label text" htmlFor="zip">ZipCode</label>
                     <div className="row-content">
                         <input className="input" type="number" id="zip" name="zip" placeholder="Enter Zip Code" 
-                            onChange={onNameChange} value={formValue.zip} required/>
-                        <error-output className="zip-error" htmlFor="number"></error-output>
+                            onChange={checkZip} value={formValue.zip} required/>
+                         <span className="error-output">{formValue.zipError}</span>
                     </div>
               </div>
           </div>
