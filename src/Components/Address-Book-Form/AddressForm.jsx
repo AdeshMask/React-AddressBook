@@ -10,224 +10,223 @@ import Logo from '../../Assests/icon/icons8-address-book-2-48.png'
 
 const Form = (props) =>{
 
-/*=================================================================================================== */
-let startValue = {
-    name: "",
-    contact: "",
-    address: "",
-    city: "",
-    state: "",
-    zip: "",
-    isUpdate: false,
-    nameError:'',
-    contactError:'',
-    addressError:'',
-    zipError:'',
-}
-const [formValue, setForm] = useState(startValue)
-
-const onReset = () => {
-    setForm({
-        ...startValue, id: formValue.id, isUpdate: formValue.isUpdate 
-    });
-};
-
-const changeValue = (event) => {
-    setForm({ ...formValue, [event.target.name]: event.target.value });
-    console.log('value for', event.target.name, event.target.value);
-}
-
-const [formError, setFormError] = useState(startValue);
-
-const validateData = () => {
-    let error = formError;
-    if (!formValue.name.match('^[A-Z]{1}[a-zAZ\\s]{2,}$')) {
-        error.name = "Invalid Name";
-    }
-    else {
-        error.name = "";
-    }
-
-    if (!formValue.contact.match('^[0-9]{2}\\s{0,1}[0-9]{10}$')) {
-        error.contact = "Invalid Number"
-    }
-    else {
-        error.contact = "";
-    }
-
-    if (!formValue.address.match('^[a-zA-Z0-9-, ]+$')){
-        error.address = "";
-    }
-    else {
-        error.address = "";
-    }
-
-    if (!formValue.zip.match('^[1-9]{1}[0-9]{5}$')) {
-        error.zip = "Invalid Zip";
-    }
-    else {
-        error.zip = "";
-    }
-
-    setFormError(error);
-}
-
-useEffect(() => {
-    validateData();
-}, [formValue]);
-
-
-
-const params = useParams();
-    useEffect (() => {
-        console.log(params.id)
-        if (params.id){
-            getPersonId(params.id)
-            console.log(params.id)
-        }
-    },[params.id]);
-
-const getPersonId = (employeeId) => {
-    console.log("Data Found")
-    BookServices.getPersonById(employeeId).then((data)=>{
-        let obj = data.data.data;
-        console.log(obj);
-        setData(obj);
-        });
-    };
+    let initialValue = {
+        name: '',
+        address: '',
+        city: 'Select City',
+        state: 'Select State',
+        contact: '',
+        zip: '',
+        isUpdate: false,
+        // error: {
+        //     name: ' ',
+        //     address: ' ',
+        //     city: ' ',
+        //     state: ' ',
+        //     contact: ' ',
+        //     zip: ' '
+        // }
         
-    const setData = (obj) => {
-            console.log()
-             setForm({
-               ...formValue,
-               ...obj,
-               id: obj.id,
-               name: obj.name,
-               contact: obj.contact,
-               address: obj.address,
-               city: obj.city,
-               state: obj.state,
-               zip: obj.zip,
-               isUpdate :true,
-             });
-           };
+    }
+    let initialError = {
+        name: '',
+        address: '',
+        city: '',
+        state: '',
+        contact: '',
+        zip: '',
+    }
 
-const save = async (event) => {
-    event.preventDefault();
+    const [formValue, setForm] = useState(initialValue);
+    const [formError, setFormError] = useState(initialError);
+    const params = useParams();
+
+    const validateData = () => {
+        let error = formError;
+        if (!formValue.name.match('^[A-Z]{1}[a-zA-Z\\s]{2,}$')) {
+            error.name = "Invalid NAME";
+        }
+        else {
+            error.name = "";
+        }
     
-    let object = {
-        id: formValue.id,
-        name: formValue.name,
-        contact: formValue.contact,
-        address: formValue.address,
-        city: formValue.city,
-        state: formValue.state,
-        zip: formValue.zip
-    };
+        if (!formValue.address.match('^[a-zA-Z0-9-, ]+$')){
+            error.address = "Invalid ADDRESS";
+        }
+        else {
+            error.address = "";
+        }
+    
+        if (!formValue.contact.match('^[0-9]{2}\\s{0,1}[0-9]{10}$')) {
+            error.contact = "Invalid PHONE NUMBER"
+        }
+        else {
+            error.contact = "";
+        }
+    
+        if (!formValue.zip.match('^[1-9]{1}[0-9]{5}$')) {
+            error.zip = "Invalid ZIP CODE";
+        }
+        else {
+            error.zip = "";
+        }
+    
+        setFormError(error);
+    }
 
-    if(formValue.isUpdate) {
-        BookServices.updatePerson(params.id,object)
-        .then((data) => {
-            var value = window.confirm(data);
-            if(value === true){
-                alert("update successfull!");
-                this.props.history.push("");
-              }else{
-                  window.location.reload();
-              }
-        });
-    } else {
-        BookServices.addPerson(object).then((response) => {
-            console.log(response);
-            alert("Data Added!!")
-          })          
-    }    
-    // window.location.reload(); 
-}
-/*=================================================================================================== */
+    useEffect(() => {
+        validateData();
+    });
+    const getContactByID = (id) => {
+        BookServices.getAll(id).then((response) => {
+            let obj = response.data.data;
+            setData(obj);
+        }).catch((error) => {
+            alert(error);
+        })
+    }
+
+    const setData = (obj) => {
+        setForm({
+            ...formValue,
+            ...obj,
+            isUpdate: true,
+            name: obj.name,
+            address: obj.address,
+            city: obj.city,
+            state: obj.state,
+            contact: obj.phone,
+            zip: obj.zip
+        })
+    }
+
+    useEffect(() => {
+        if (params.id) {
+            getContactByID(params.id);
+        }
+    }, []);
+
+    const changeValue = async (event) => {
+        setForm({...formValue, [event.target.name]: event.target.value})
+    }
+
+    const save = (event) => {
+        event.preventDefault();
+        let object ={
+            name:formValue.name,
+            address: formValue.address,
+            city: formValue.city,
+            state: formValue.state,
+            phone: formValue.contact,
+            zip: formValue.zip,
+        }
+        if (formValue.isUpdate) {
+            BookServices.updatePerson(params.id, object).then((response) => {
+                props.history.push('');
+            }).catch((error) => {
+                alert(error);
+            })
+        }
+        else {
+            BookServices.addPerson(object).then((response) => {
+                props.history.push('');
+            }).catch((error) => {
+                alert(error);
+            })
+        }
+    }
+
+    const reset = () => {
+        setForm({...initialValue, id: formValue.id, isUpdate: formValue.isUpdate});
+    }
 
     return (
-        
-            <div>
-                <div className="home-button">
-                <Link to="/home">
-                <Button variant="contained" size="large">Home</Button></Link>
+        <>
+            <header className="header-content header">
+                <div className="logo-content">
+                    <img src={Logo} alt="logo"/>
+                    <div>
+                        <span className="addressBook-text">Address</span><br/>
+                        <span className="addressBook-text addressBook-book">Book</span>
+                    </div>
                 </div>
-                <Box sx={{ '& button': { m: 1 } }}>
-                <div className="form-content">
-                    <div className="form-head">
-                        <span> PERSON ADDRESS FORM </span>
-                    </div>
-                <form className="form" action="#" onSubmit={save}>
-                    <label className="label text" htmlFor="name">Full Name</label>
-                    <div className="row-content">
-                        <input className="input" type="text" id="name" name="name" placeholder="Enter Name" 
-                            onChange={changeValue} value={formValue.name}/>
-                        {formError.name && <div className="error">{formError.name}</div>}
+            </header>
+            <div className="form-content">
+                <form action="#" className="form" onSubmit={save}>
+                    <div className="form_header">
+                        <div className="form_header_text">Person Address Form</div>
+                        <Link to="/home">
+                        <Button variant="contained" size="large">Home</Button></Link>
+                        
                     </div>
 
-                    <label className="label text" htmlFor="phone">Phone Number</label>
-                    <div className="row-content">
-                        <input className="input" type="number" id="contact" name="contact" placeholder="Enter Phone Number" 
-                            onChange={changeValue} value={formValue.contact} required/>
-                         {formError.contact && <div className="error">{formError.contact}</div>}
-                    </div>
-
-                    <label className="label text" htmlFor="address">Address</label>
-                    <div className="row-content">
-                        <textarea className="input" name="address" id="address" rows="4" placeholder="Enter Address" 
-                            onChange={changeValue} value={formValue.address} ></textarea>
-                             {formError.address && <div className="error">{formError.address}</div>}
-                    </div>
-
-                    <div className="row">
-                        <div className="input-content">
-                            <label className="label text" htmlFor="city">City</label>
-                                <div className="row-content">
-                                    <select className="input" name="city" id="city" value={formValue.city} onChange={changeValue} >
-                                    <option value="">City</option>
-                                    <option value="Mumbai">Mumbai</option>
-                                    <option value="Solapur">Solapur</option>
-                                    <option value="Pune">Pune</option>
-                                    <option value="Chennai">Chennai</option>
-                                    <option value="Kolkata">Kolkata</option>
-                                    <option value="Jaipur">Jaipur</option>
-                                    </select>
-                                </div>
+                    <div className="form_content">
+                        <div className="row_content">
+                            <label htmlFor="name" className="label text">Full Name</label>
+                            <br/>
+                            <input type="text" className="input" id="name" name="name" placeholder="Full Name"
+                                     value={formValue.name} onChange={changeValue} autoComplete="off" required/>
+                            <div className="error">{formError.name}</div>
                         </div>
-                    <div className="input-content">
-                    <label className="label text" htmlFor="state">State</label>
-                    <div className="row-content">
-                        <select className="input" name="state" id="state" onChange={changeValue} value={formValue.state}>
-                            <option value="">State</option>
-                            <option value="Rajasthan">Rajasthan</option>
-                            <option value="Maharashtra">Maharashtra</option>
-                            <option value="West Bengal">West Bengal</option>
-                            <option value="Bihar">Bihar</option>
-                            <option value="Tamil Nadu">Tamil Nadu</option>
-                        </select>
+                        <div className="row_content">
+                            <label htmlFor="contact" className="label text">Phone Number</label>
+                            <br/>
+                            <input type="tel" className="input" id="contact" name="contact" placeholder="Phone Number"
+                                   value={formValue.contact} onChange={changeValue}  autoComplete="off"/>
+                           <div className="error">{formError.contact}</div>
+                        </div>
+                        <div className="row_content">
+                            <label htmlFor="address" className="label text">Address</label>
+                            <br/>
+                            <textarea name="address" id="address" placeholder="Address" autoComplete="off"
+                                      value={formValue.address} onChange={changeValue} required></textarea>
+                            <div className="error">{formError.address}</div>
+                        </div>
+                        <div className="row_content">
+                            <div className="column_constrains">
+                                <div className="column_content">
+                                    <label htmlFor="city" className="label text">City</label>
+                                    <br/>
+                                        <select name="city" id="city" value={formValue.city} onChange={changeValue}>
+                                            <option selected disabled hidden value="Select City">Select City</option>
+                                            <option value="Kurnool">Kurnool</option>
+                                            <option value="Bangalore">Bangalore</option>
+                                            <option value="Chennai">Chennai</option>
+                                            <option value="Delhi">Delhi</option>
+                                            <option value="Mumbai">Mumbai</option>
+                                            <option value="Hyderabad">Hyderabad</option>
+                                        </select>
+                                </div>
+                                <div className="column_content">
+                                    <label htmlFor="state" className="label text">State</label>
+                                    <br/>
+                                        <select name="state" id="state" value={formValue.state} onChange={changeValue}>
+                                            <option selected disabled hidden value="Select State">Select State</option>
+                                            <option value="Andhra Pradesh">Andhra Pradesh</option>
+                                            <option value="Delhi">Delhi</option>
+                                            <option value="Karnataka">Karnataka</option>
+                                            <option value="Telangana">Telangana</option>
+                                            <option value="Maharashtra">Maharashtra</option>
+                                            <option value="Tamil Nadu">Tamil Nadu</option>
+                                        </select>
+                                </div>
+                                <div className="column_content">
+                                    <label htmlFor="zip" className="label text">Zip code</label>
+                                    <br/>
+                                    <input type="text" className="input zip" id="zip" name="zip"
+                                           value={formValue.zip} onChange={changeValue} autoComplete="off" placeholder="Zip Code"/>
+                                    <div className="error">{formError.zip}</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="button_content">
+                            <button type="submit" className="button button_submit" id="submitButton">{formValue.isUpdate ? 'Update' : 'Submit'}</button>
+                            <button type="reset" className="button button_reset" id="resetButton" onClick={reset}>Reset</button>
+                        </div>
                     </div>
-                </div>
-                <div className="input-content">
-                    <label className="label text" htmlFor="zip">ZipCode</label>
-                    <div className="row-content">
-                        <input className="input" type="number" id="zip" name="zip" placeholder="Enter Zip Code" 
-                            onChange={changeValue} value={formValue.zip} required/>
-                         <span className="error-output">{formValue.zipError}</span>
-                    </div>
-              </div>
-          </div>
-          <div className="buttonParent">
-              <div className="add-reset">
-                  <Button variant="contained" size="large" type="submit" id="addButton">{formValue.isUpdate ? 'Update' : 'Submit'}</Button>
-                  <Button variant="contained" size="large" type="reset" id="resetButton" onClick={onReset}>Reset</Button>
-              </div>
-          </div>
-      </form>
-  </div>
-  </Box>
-</div>
-
-)}
-
+                </form>
+            </div>
+        </>
+    );
+}
 export default Form;
