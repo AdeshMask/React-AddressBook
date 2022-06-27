@@ -22,6 +22,12 @@ class BookService{
       deletePerson(personId) {
         return axios.delete(`${this.baseUrl}/delete/${personId}`);
       }
+      sortByCity() {
+        return axios.get(`${this.baseUrl}/sortcity`);
+      }
+      sortByState() {
+        return axios.get(`${this.baseUrl}/sortstate`);
+      }
 }
 
 export default new BookService();

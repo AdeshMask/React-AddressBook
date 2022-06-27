@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import Form from './Components/Address-Book-Form/AddressBookForm';
 import Home from './Components/Address-Book-Home/AddressBookHome';
+import NewForm from './Components/Address-Book-Form/AddressForm';
 import Header from './Header';
 
 function App() {
@@ -11,6 +12,7 @@ function App() {
           <Switch>
             <Route path="/home"><Home /></Route>
             <Route path="/form"><Form /></Route>
+            <Route path="/newform"><NewForm /></Route>
             <Route exact path="/AddressBookForm/:id"><Form /></Route>
           </Switch>
         </Router>

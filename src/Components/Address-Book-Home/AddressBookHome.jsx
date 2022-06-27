@@ -28,6 +28,16 @@ class Home extends Component {
             this.setState({ addressbook: response.data.data });
         });
     }
+    sortByCity() {
+        BookServices.sortByCity().then((response) => {
+            this.setState({ addressbook: response.data.data });
+        });
+    }
+    sortByState() {
+        BookServices.sortByState().then((response) => {
+            this.setState({ addressbook: response.data.data });
+        });
+    }
     
     delete = (personId) => {
         let id = parseInt(personId)
@@ -48,19 +58,20 @@ class Home extends Component {
                         <div className="person-detail-text">
                             Person Details
                         </div>
-                        <Link to="/form">
+                        <Link to="/newform">
                             <Button variant="contained" size="large">Add User</Button></Link>
                     </div>
     
                      <table id="table-display" className="table">
                         <tr>
-                            <th>Name</th>
-                            <th>Contact</th>
-                            <th>Address</th>
-                            <th>City</th>
-                            <th>State</th>
-                            <th>Zip</th>
-                            <th>Action</th>
+                            <th scope="col">Name</th>
+                            <th scope="col">Contact</th>
+                            <th scope="col">Address</th>
+                            
+                            <th scope="col" onClick={()=> this.sortByCity()}>City</th>
+                            <th scope="col" onClick={()=> this.sortByState()}>State</th>
+                            <th scope="col">Zip</th>
+                            <th scope="col">Action</th>
                         </tr>
                         <tbody>
                             {this.state.addressbook.map((book,index) => (

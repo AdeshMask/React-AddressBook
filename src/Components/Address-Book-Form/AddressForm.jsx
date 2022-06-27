@@ -15,85 +15,66 @@ let startValue = {
     name: "",
     contact: "",
     address: "",
-    // city: "",
-    // state: "",
+    city: "",
+    state: "",
     zip: "",
-    // isUpdate: false,
+    isUpdate: false,
     nameError:'',
     contactError:'',
     addressError:'',
     zipError:'',
 }
-const [formValue, setState] = useState(startValue)
+const [formValue, setForm] = useState(startValue)
 
 const onReset = () => {
-    setState({
+    setForm({
         ...startValue, id: formValue.id, isUpdate: formValue.isUpdate 
     });
 };
-const initializeMessage = (field, errorMessage, validMessage) => {
-    setState(previousState => ({
-      error: {
-        ...previousState.error,
-        [field]: errorMessage
-      }
-    }));
-    this.setState(previousState => ({
-      valid: {
-        ...previousState.valid,
-        [field]: validMessage
-      }
-    }));
-  }
 
-const onNameChange = (event) => {
-    setState({ name: event.target.value });
-    console.log(setState);
-    nameCheck(event.target.value);
+const changeValue = (event) => {
+    setForm({ ...formValue, [event.target.name]: event.target.value });
+    console.log('value for', event.target.name, event.target.value);
 }
 
-const nameCheck = (nameValue) => {
-    const nameRegex = RegExp("^[A-Z]{1}[a-zA-Z\s]{2,}$");
-    if(nameRegex.test(nameValue)) {
-        setState({nameError:''})
-      } else {
-        setState({nameError:'Invalid Name'})
-      }    
+const [formError, setFormError] = useState(startValue);
+
+const validateData = () => {
+    let error = formError;
+    if (!formValue.name.match('^[A-Z]{1}[a-zAZ\\s]{2,}$')) {
+        error.name = "Invalid Name";
+    }
+    else {
+        error.name = "";
+    }
+
+    if (!formValue.contact.match('^[0-9]{2}\\s{0,1}[0-9]{10}$')) {
+        error.contact = "Invalid Number"
+    }
+    else {
+        error.contact = "";
+    }
+
+    if (!formValue.address.match('^[a-zA-Z0-9-, ]+$')){
+        error.address = "";
+    }
+    else {
+        error.address = "";
+    }
+
+    if (!formValue.zip.match('^[1-9]{1}[0-9]{5}$')) {
+        error.zip = "Invalid Zip";
+    }
+    else {
+        error.zip = "";
+    }
+
+    setFormError(error);
 }
 
-
-  const checkcontact = (event) => {
-    console.log('value is', event.target.value);
-    const nameRegex = RegExp("^[0-9]{2}\\s{0,1}[0-9]{10}$");
-    setState({contact: event.target.value});
-    if(nameRegex.test(event.target.value)){
-        setState({contactError:''})
-    }
-    else setState({contactError:'Enter valid number'})
-    
-  }
-
-  const checkAddress = (event) => {
-    console.log('value is', event.target.value);
-    const nameRegex = RegExp("^[a-zA-Z0-9-, ]+$");
-    setState({address: event.target.value});
-    if(nameRegex.test(event.target.value)){
-        setState({addressError:''})
-    }
-    else setState({addressError:'Enter Valid Address'})
-    setState({ ...formValue, [event.target.name]: event.target.value });
-  }
-
-  const checkZip = (event) => {
-    console.log('value is', event.target.value);
-    const nameRegex = RegExp("^[1-9]{1}[0-9]{5}$");
-    setState({zip: event.target.value});
-    if(nameRegex.test(event.target.value)){
-        setState({zipError:''})
-    }
-    else setState({zipError:'Enter Valid zip'})
-    setState({ ...formValue, [event.target.name]: event.target.value });
-  }
+useEffect(() => {
+    validateData();
+}, [formValue]);
 
 
 
@@ -117,7 +98,7 @@ const getPersonId = (employeeId) => {
         
     const setData = (obj) => {
             console.log()
-             setState({
+             setForm({
                ...formValue,
                ...obj,
                id: obj.id,
@@ -181,29 +162,29 @@ const save = async (event) => {
                     <label className="label text" htmlFor="name">Full Name</label>
                     <div className="row-content">
                         <input className="input" type="text" id="name" name="name" placeholder="Enter Name" 
-                            onChange={nameCheck} value={formValue.name}/>
-                        <span className="error-output">{formValue.nameError}</span>
+                            onChange={changeValue} value={formValue.name}/>
+                        {formError.name && <div className="error">{formError.name}</div>}
                     </div>
 
                     <label className="label text" htmlFor="phone">Phone Number</label>
                     <div className="row-content">
                         <input className="input" type="number" id="contact" name="contact" placeholder="Enter Phone Number" 
-                            onChange={checkcontact} value={formValue.contact} required/>
-                         <span className="error-output">{formValue.contactError}</span>
+                            onChange={changeValue} value={formValue.contact} required/>
+                         {formError.contact && <div className="error">{formError.contact}</div>}
                     </div>
 
                     <label className="label text" htmlFor="address">Address</label>
                     <div className="row-content">
                         <textarea className="input" name="address" id="address" rows="4" placeholder="Enter Address" 
-                            onChange={checkAddress} value={formValue.address} ></textarea>
-                             <span className="error-output">{formValue.addressError}</span>
+                            onChange={changeValue} value={formValue.address} ></textarea>
+                             {formError.address && <div className="error">{formError.address}</div>}
                     </div>
 
                     <div className="row">
                         <div className="input-content">
                             <label className="label text" htmlFor="city">City</label>
                                 <div className="row-content">
-                                    <select className="input" name="city" id="city" value={formValue.city} onChange={onNameChange} >
+                                    <select className="input" name="city" id="city" value={formValue.city} onChange={changeValue} >
                                     <option value="">City</option>
                                     <option value="Mumbai">Mumbai</option>
                                     <option value="Solapur">Solapur</option>
@@ -217,7 +198,7 @@ const save = async (event) => {
                     <div className="input-content">
                     <label className="label text" htmlFor="state">State</label>
                     <div className="row-content">
-                        <select className="input" name="state" id="state" onChange={onNameChange} value={formValue.state}>
+                        <select className="input" name="state" id="state" onChange={changeValue} value={formValue.state}>
                             <option value="">State</option>
                             <option value="Rajasthan">Rajasthan</option>
                             <option value="Maharashtra">Maharashtra</option>
@@ -231,7 +212,7 @@ const save = async (event) => {
                     <label className="label text" htmlFor="zip">ZipCode</label>
                     <div className="row-content">
                         <input className="input" type="number" id="zip" name="zip" placeholder="Enter Zip Code" 
-                            onChange={checkZip} value={formValue.zip} required/>
+                            onChange={changeValue} value={formValue.zip} required/>
                          <span className="error-output">{formValue.zipError}</span>
                     </div>
               </div>
